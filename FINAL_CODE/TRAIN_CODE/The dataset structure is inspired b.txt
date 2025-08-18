@@ -1,0 +1,38 @@
+The dataset structure is inspired by real-world deforestation datasets such as the Amazon Rainforest Deforestation Dataset13 and the Global Forest Watch platform3.
+
+Additional features like carbon emissions and protected areas are derived from studies on deforestation
+
+
+Year: The year of the data record (2015–2024).
+
+Country: The country where deforestation is occurring.
+
+Region: The specific region within the country.
+
+Forest_Area_km2: Total forest area in square kilometers.
+
+Population_Density: Population density (people per square kilometer).
+
+Agricultural_Land_Percent: Percentage of land used for agriculture.
+
+Rainfall_mm: Average annual rainfall in millimeters.
+
+Temperature_C: Average annual temperature in degrees Celsius.
+
+Road_Density_km_per_km2: Density of roads (kilometers per square kilometer).
+
+Mining_Activity: Level of mining activity (0 to 1, where 1 is the highest).
+
+Protected_Area_Percent: Percentage of land under protected status.
+
+Deforestation_Rate: Annual percentage of forest area lost.
+
+Fire_Incidents: Number of wildfire incidents in the region.
+
+Logging_Activity: Level of logging activity (0 to 1, where 1 is the highest).
+
+Urban_Expansion_Rate: Rate of urban expansion (percentage increase in urban area).
+
+Carbon_Emissions_kt: Annual carbon emissions in kilotons.
+
+Label: Target variable ("safe" or "danger") based on deforestation risk.

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Deforestation Prediction Result</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h1 { color: #2c3e50; text-align: center; }
+        h3 { color: #34495e; }
+        h4 { color: #7f8c8d; }
+        ul { list-style-type: none; padding: 0; }
+        li { margin: 5px 0; }
+        .container { max-width: 800px; margin: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Deforestation Prediction Result</h1>
+        <h3>Prediction: {{ prediction }}</h3>
+        <h4>Input Data:</h4>
+        <ul>
+            {% for key, value in input_data.items() %}
+                <li>{{ key }}: {{ value }}</li>
+            {% endfor %}
+        </ul>
+        <h4>Project Description:</h4>
+        <p>{{ project_description }}</p>
+    </div>
+</body>
+</html>

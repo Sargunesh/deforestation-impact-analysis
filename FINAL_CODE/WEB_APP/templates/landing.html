@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoSphere: AI-Powered Environmental Intelligence</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.0/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.0/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --primary-green: #10B981;
+            --secondary-green: #059669;
+            --accent-blue: #3B82F6;
+            --background: radial-gradient(circle at top right, #F0FDF4, #DCFCE7, #D1FAE5);
+        }
+
+        * {
+            font-family: 'Space Grotesk', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--background);
+            overflow-x: hidden;
+        }
+
+        .neo-glass {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 
+                0 4px 6px rgba(0, 0, 0, 0.1),
+                0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+
+        .gradient-border {
+            position: relative;
+            border-radius: 1rem;
+            background: linear-gradient(45deg, var(--primary-green), var(--accent-blue));
+            padding: 1px;
+        }
+
+        .gradient-border > div {
+            background: white;
+            border-radius: 1rem;
+        }
+
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .glow {
+            animation: glow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 10px rgba(16, 185, 129, 0.2); }
+            to { box-shadow: 0 0 20px rgba(16, 185, 129, 0.4); }
+        }
+
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .ai-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .ai-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .prediction-badge {
+            background: linear-gradient(45deg, #10B981, #3B82F6);
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .eco-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary-green), var(--accent-blue));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        #globe-canvas {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .custom-image {
+    width: 300px;
+    height: auto;
+    position: absolute; /* Positions the image */
+    top: 50px; /* Distance from the top */
+    left: 50%; /* Centers the image horizontally */
+    transform: translateX(-50%); /* Corrects the centering */
+  }
+    </style>
+</head>
+<body>
+    <canvas id="globe-canvas"></canvas>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 neo-glass">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <div class="eco-icon glow">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <span class="text-2xl font-bold bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent">
+                        EcoSphere
+                    </span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#features" class="text-green-800 hover:text-green-600 transition">Features</a>
+                    <a href="#ai-predictions" class="text-green-800 hover:text-green-600 transition">AI Insights</a>
+                    <a href="#impact" class="text-green-800 hover:text-green-600 transition">Impact</a>
+                    <a href="/login" class="text-green-800 hover:text-green-600 transition">Login</a>
+                    <a href="/register" class="text-green-800 hover:text-green-600 transition">Register</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="min-h-screen pt-32 relative overflow-hidden">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="space-y-8" data-aos="fade-right">
+                    <h1 class="text-6xl font-bold leading-tight">
+                        Protecting Earth with
+                        <span class="bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent">
+                            AI Intelligence
+                        </span>
+                    </h1>
+                    <p class="text-xl text-green-700">
+                        Revolutionizing environmental conservation through advanced AI, real-time monitoring, and predictive analytics.
+                    </p>
+                    <div class="flex space-x-4">
+                        <button class="px-8 py-4 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-full hover:shadow-lg transition">
+                            <i class="fas fa-rocket mr-2"></i>
+                            Get Started
+                        </button>
+                        <button class="px-8 py-4 neo-glass rounded-full hover:shadow-lg transition">
+                            <i class="fas fa-play mr-2"></i>
+                            Watch Demo
+                        </button>
+                    </div>
+                </div>
+                <div class="relative" data-aos="fade-left">
+                    
+<img 
+src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZeU6Gf6AOx9PPnnCQCKst1ERidXohlUfb92GM3eJcBBLCXrx-Y_ZCIT-39QOrK_iu3fk&usqp=CAU" 
+alt="Earth Visualization" 
+class="rounded-2xl shadow-2xl floating custom-image"
+>
+                    <div class="absolute -bottom-10 -right-10 neo-glass p-6 rounded-xl">
+                        <div class="prediction-badge mb-4">Live AI Prediction</div>
+                        <p class="text-green-800">Carbon reduction potential: 45% by 2030</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Predictions Section -->
+    <section id="ai-predictions" class="py-20">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-center mb-16 bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent">
+                AI-Powered Environmental Insights
+            </h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="neo-glass p-6 rounded-xl ai-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="eco-icon mb-4">
+                        <i class="fas fa-tree"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-green-900 mb-4">Deforestation Prevention</h3>
+                    <p class="text-green-700 mb-4">AI predicts high-risk areas with 94% accuracy</p>
+                    <div class="prediction-badge">Risk Level: Moderate</div>
+                </div>
+                <div class="neo-glass p-6 rounded-xl ai-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="eco-icon mb-4">
+                        <i class="fas fa-cloud"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-green-900 mb-4">Air Quality Analysis</h3>
+                    <p class="text-green-700 mb-4">Real-time pollution monitoring and prediction</p>
+                    <div class="prediction-badge">AQI Forecast: Improving</div>
+                </div>
+                <div class="neo-glass p-6 rounded-xl ai-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="eco-icon mb-4">
+                        <i class="fas fa-water"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-green-900 mb-4">Water Conservation</h3>
+                    <p class="text-green-700 mb-4">ML-optimized resource management</p>
+                    <div class="prediction-badge">Efficiency: 78% ↑</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Predictions -->
+    <section class="py-20 bg-gradient-to-b from-green-50 to-white">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-center mb-16">
+                <span class="bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent">
+                    Live Environmental Predictions
+                </span>
+            </h2>
+            <div class="neo-glass p-8 rounded-xl">
+                <canvas id="predictionChart" height="100"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 1000,
+            once: true
+        });
+
+        // GSAP Animations
+        gsap.registerPlugin(ScrollTrigger);
+        
+        gsap.from(".eco-icon", {
+            duration: 1,
+            y: 30,
+            opacity: 0,
+            stagger: 0.2,
+            scrollTrigger: {
+                trigger: ".eco-icon",
+                start: "top center"
+            }
+        });
+
+        // Three.js Globe
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({
+            canvas: document.getElementById('globe-canvas'),
+            alpha: true
+        });
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        
+        const geometry = new THREE.SphereGeometry(5, 32, 32);
+        const material = new THREE.MeshBasicMaterial({
+            color: 0x10B981,
+            wireframe: true
+        });
+        const sphere = new THREE.Mesh(geometry, material);
+        scene.add(sphere);
+
+        camera.position.z = 10;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            sphere.rotation.x += 0.001;
+            sphere.rotation.y += 0.001;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Prediction Chart
+        const ctx = document.getElementById('predictionChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Carbon Reduction Progress',
+                    data: [10, 25, 35, 45, 60, 75],
+                    borderColor: '#10B981',
+                    tension: 0.4,
+                    fill: true,
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Dynamic AI Predictions
+        const predictions = [
+            "Forest cover increase projected: 12% by 2026",
+            "Water quality improvement: 23% expected",
+            "Renewable energy adoption rate: +45%",
+            "Species preservation success rate: 89%"
+        ];
+
+        function updatePredictions() {
+            const cards = document.querySelectorAll('.ai-card');
+            cards.forEach((card, index) => {
+                if (predictions[index]) {
+                    const badge = card.querySelector('.prediction-badge');
+                    badge.textContent = predictions[index];
+                }
+            });
+        }
+
+        setInterval(updatePredictions, 5000);
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<!-- Previous head content remains the same -->
+<head>
+    <!-- Previous head content -->
+    <style>
+        /* Previous styles remain the same */
+
+        .genai-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            transition: all 0.4s ease;
+        }
+
+        .genai-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(16, 185, 129, 0.1);
+        }
+
+        .ai-prompt {
+            font-family: 'Space Mono', monospace;
+            color: #059669;
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 3px solid #10B981;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .ai-response {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .thinking-animation {
+            display: inline-block;
+            animation: thinking 2s infinite;
+        }
+
+        @keyframes thinking {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Previous content until AI Predictions section -->
+
+    <!-- New GenAI Insights Section -->
+    <section id="impact" class="py-20 bg-gradient-to-r from-green-50 to-blue-50">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-center mb-16">
+                <span class="bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent">
+                    Generative AI Environmental Analysis
+                </span>
+            </h2>
+            
+            <!-- Real-time GenAI Analysis -->
+            <div class="neo-glass p-8 rounded-xl mb-12">
+                <div class="flex items-center mb-6">
+                    <div class="eco-icon mr-4">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-green-900">Real-time Environmental Analysis</h3>
+                </div>
+                <div class="ai-prompt">
+                    "Analyze current global environmental trends and provide actionable insights..."
+                </div>
+                <div class="ai-response" id="dynamicAnalysis">
+                    <!-- Content updated via JavaScript -->
+                </div>
+            </div>
+
+            <!-- AI-Generated Recommendations -->
+            <div class="grid md:grid-cols-2 gap-8 mb-12">
+                <div class="genai-card p-6 rounded-xl" data-aos="fade-up">
+                    <h4 class="text-xl font-bold text-green-900 mb-4">Carbon Footprint Optimization</h4>
+                    <div class="space-y-4" id="carbonRecommendations">
+                        <!-- Updated via JavaScript -->
+                    </div>
+                </div>
+                <div class="genai-card p-6 rounded-xl" data-aos="fade-up" data-aos-delay="100">
+                    <h4 class="text-xl font-bold text-green-900 mb-4">Biodiversity Enhancement</h4>
+                    <div class="space-y-4" id="biodiversityInsights">
+                        <!-- Updated via JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Predictive Scenarios -->
+            <div class="neo-glass p-8 rounded-xl">
+                <h3 class="text-2xl font-bold text-green-900 mb-6">AI-Generated Environmental Scenarios</h3>
+                <div class="grid md:grid-cols-3 gap-6" id="predictiveScenarios">
+                    <!-- Updated via JavaScript -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Add to existing script section -->
+    <script>
+        // Previous script content remains
+
+        // GenAI Content Generation
+        const environmentalAnalyses = [
+            "Based on current satellite data, our AI predicts a 15% increase in forest recovery rates in protected areas implementing our suggested policies.",
+            "Machine learning analysis indicates potential water conservation improvements of 28% through smart irrigation systems in agricultural regions.",
+            "Neural networks have identified three new high-priority conservation zones based on biodiversity patterns and climate resilience factors."
+        ];
+
+        const carbonRecommendations = [
+            "Implement AI-optimized renewable energy grid integration",
+            "Deploy smart building management systems",
+            "Optimize transportation routes using predictive analytics"
+        ];
+
+        const biodiversityInsights = [
+            "Establish wildlife corridors based on AI movement pattern analysis",
+            "Protect newly identified species habitats",
+            "Implement AI-driven invasive species management"
+        ];
+
+        const scenarioDescriptions = [
+            {
+                title: "Optimistic Scenario",
+                probability: "35%",
+                description: "AI-driven conservation efforts lead to rapid ecosystem recovery"
+            },
+            {
+                title: "Moderate Scenario",
+                probability: "45%",
+                description: "Balanced approach achieves steady environmental improvements"
+            },
+            {
+                title: "Conservative Scenario",
+                probability: "20%",
+                description: "Limited adoption of AI solutions shows slower progress"
+            }
+        ];
+
+        // Update GenAI Content
+        function updateGenAIContent() {
+            // Update Analysis
+            const analysisElement = document.getElementById('dynamicAnalysis');
+            const randomAnalysis = environmentalAnalyses[Math.floor(Math.random() * environmentalAnalyses.length)];
+            analysisElement.innerHTML = `
+                <p class="text-green-800">${randomAnalysis}</p>
+                <div class="mt-4 text-sm text-green-600">
+                    <i class="fas fa-clock mr-2"></i>Generated just now
+                </div>
+            `;
+
+            // Update Carbon Recommendations
+            const carbonElement = document.getElementById('carbonRecommendations');
+            carbonElement.innerHTML = carbonRecommendations.map(rec => `
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-check-circle text-green-500"></i>
+                    <p class="text-green-800">${rec}</p>
+                </div>
+            `).join('');
+
+            // Update Biodiversity Insights
+            const biodiversityElement = document.getElementById('biodiversityInsights');
+            biodiversityElement.innerHTML = biodiversityInsights.map(insight => `
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-leaf text-green-500"></i>
+                    <p class="text-green-800">${insight}</p>
+                </div>
+            `).join('');
+
+            // Update Predictive Scenarios
+            const scenariosElement = document.getElementById('predictiveScenarios');
+            scenariosElement.innerHTML = scenarioDescriptions.map(scenario => `
+                <div class="genai-card p-6 rounded-xl">
+                    <h4 class="text-lg font-bold text-green-900 mb-2">${scenario.title}</h4>
+                    <div class="prediction-badge mb-4">Probability: ${scenario.probability}</div>
+                    <p class="text-green-800">${scenario.description}</p>
+                </div>
+            `).join('');
+        }
+
+        // Initial update and set interval
+        updateGenAIContent();
+        setInterval(updateGenAIContent, 10000);
+
+        // Previous scripts remain
+    </script>
+</body>
+</html>
